@@ -1,0 +1,11 @@
+\beamer@endinputifotherversion {3.36pt}
+\select@language {spanish}
+\beamer@sectionintoc {1}{Introducci\'on}{3}{0}{1}
+\beamer@sectionintoc {2}{Algoritmos de visualSLAM}{7}{0}{2}
+\beamer@subsectionintoc {2}{1}{MonoSlam}{8}{0}{2}
+\beamer@subsectionintoc {2}{2}{PTAM}{12}{0}{2}
+\beamer@subsectionintoc {2}{3}{M\'etodos directos}{16}{0}{2}
+\beamer@subsectionintoc {2}{4}{SVO}{19}{0}{2}
+\beamer@subsectionintoc {2}{5}{LSD-SLAM}{22}{0}{2}
+\beamer@subsectionintoc {2}{6}{ORB-SLAM}{27}{0}{2}
+\beamer@sectionintoc {3}{Conclusiones}{30}{0}{3}

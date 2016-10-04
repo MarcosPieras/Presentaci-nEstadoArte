@@ -1,0 +1,23 @@
+\begin{figure}[!h]
+\centering
+
+\includegraphics[width=95mm]{p3pAmbi.png}
+
+%\caption{} \label{lk1tiem}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\centering
+\begin{tabular}{ccc}
+
+
+\subfloat{\includegraphics[width=35mm]{dlt.png}}&
+\subfloat{\includegraphics[width=35mm]{epnpERRo.png}}&
+\subfloat{\includegraphics[width=35mm]{epnpERRoGN.png}}\\
+
+%\subfloat[GT]{\includegraphics[width=25mm]{./conclusiones/groundedema_1.png}}&
+
+%\caption{cc.} \label{pseudo}
+\end{tabular}
+\end{figure}

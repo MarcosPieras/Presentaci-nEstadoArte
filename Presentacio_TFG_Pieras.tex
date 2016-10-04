@@ -1,0 +1,977 @@
+\documentclass[10pt]{beamer}
+\usepackage[spanish]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage{caption}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\usepackage{amsmath}
+\usepackage{algpseudocode}
+\usepackage{amssymb,amsthm,amsmath,epsfig,times,subfig,graphicx,tikz,multirow}
+\usepackage{graphics,graphicx,makeidx}
+\usepackage{xcolor}
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\theoremstyle{definition}
+\newtheorem{Def}{Autolocalización visual}
+\newtheorem{rmk}{Remark}
+\newtheorem{exam}{Example}
+
+
+%% Packages to use
+
+
+
+\newcommand{\TM}{{T_{\text{M}}}}
+\newcommand{\TNM}{{T_{\text{nM}}}}
+\newcommand{\TP}{{T_{\text{P}}}}
+\newcommand{\TLK}{{T_{\text{LK}}}}
+\newcommand{\TD}{{T_{\text{D}}}}
+\newcommand{\TSS}[1][]{T_{#1}^{\text{SS}}}
+
+
+
+\newcommand{\SM}{{S_{\text{M}}}}
+\newcommand{\SNM}{{S_{\text{nM}}}}
+\newcommand{\SP}{{S_{\text{P}}}}
+\newcommand{\SL}{{S_{\text{L}}}}
+\newcommand{\SD}{{S_{\text{D}}}}
+\newcommand{\SSS}[1][]{S_{#1}^{\text{SS}}}
+
+
+\newcommand{\ILK}{{I_{\text{LK}}}}
+\newcommand{\IKD}{{I_{\text{KD}}}}
+\newcommand{\IRC}{{I_{\text{RC}}}}
+\newcommand{\IYG}{{T_{\text{YG}}}}
+\newcommand{\IGD}{{I_{\text{GD}}}}
+
+\mode<presentation>
+{
+\usetheme{CambridgeUS}
+%\setbeamercovered{transparent}
+%\useinnertheme[shadow]{rounded}
+\usecolortheme{orchid}
+}
+
+
+
+\title[Autolocalización visual]{Investigación en autolocalización visual}
+\author[Pieras]{%
+  Marcos Pieras Sagardoy
+}
+\institute[URJC]{
+ \includegraphics[scale=0.05]{Logo_URJC.png}
+ }
+
+
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+\begin{center}
+\Large \textbf{\insertsection}
+\end{center}
+  \end{frame}
+}
+
+\begin{document}
+
+\let\newblock\relax
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Índex}
+  \tableofcontents
+\end{frame}
+
+\section{Introducción}
+
+\begin{frame}{Introducción}
+\begin{Def}
+Consiste en la determinación de la posición y orientación de la cámara utilizando para ello únicamente las imágenes recibidas de ésta.
+\end{Def}
+
+
+\begin{itemize}
+
+\item Aplicaciones en robótica y en realidad aumentada.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\begin{tabular}{ccc}
+
+\subfloat[Dyson]{\includegraphics[width=40mm]{intro/dyson.jpg}}&
+\subfloat[HoloLens]{\includegraphics[width=40mm]{intro/holoLens.jpg}}\\
+
+\end{tabular}
+\end{figure}
+
+
+\end{frame}
+
+
+\begin{frame}{Introducción: Robótica}
+
+
+Un robot para navegar debe realizar estas tareas:
+
+
+\begin{itemize}
+
+\item Percepción
+\item Localización
+\item Cognición
+\item Control del movimiento
+
+
+\end{itemize}
+
+
+
+
+\hspace{2cm}
+ 
+Para la \textbf{localización} hay sensores específicos como:
+
+\begin{itemize}
+
+\item IMU
+\item Navegación satélites
+\item Escáneres
+
+\end{itemize}
+
+\hspace{2cm}
+
+Entre ellos destacan las cámaras.
+
+\end{frame}
+
+\begin{frame}{Introducción: Visión artificial}
+
+Autolocalización visual
+
+
+\begin{figure}[!h]
+\centering
+
+\includegraphics[width=85mm]{intro/prioris.png}
+
+%\caption{} \label{lk1tiem}
+\end{figure}
+
+
+
+
+
+\end{frame}
+
+\section{Algoritmos de visualSLAM}
+\subsection{MonoSlam}
+
+
+\begin{frame}{MonoSlam: Introducción}
+
+\begin{itemize}
+
+\item Primer algoritmo de slam monocular en tiempo real.
+
+\end{itemize}
+\begin{itemize}
+\item Basado en \textit{Filtering}, \textit{Extended Kalman Filter}.
+\end{itemize}
+
+\begin{itemize}
+\item Basado en características, FAST.
+\end{itemize}
+
+\begin{itemize}
+\item Reconstrucción dispersa de unos 100 puntos.
+
+\end{itemize}
+\begin{itemize}
+\item Para robótica, enfatizar localización.
+
+\end{itemize}
+
+
+\end{frame}
+%
+%\begin{frame}{Funcionamiento: Inicialización}
+%
+%Inicialización 4 puntos conocidos.
+%
+%
+%\begin{figure}[!h]
+%\centering
+%
+%\includegraphics[width=85mm]{monoslam/puntosConocidos.png}
+%
+%%\caption{} \label{lk1tiem}
+%\end{figure}
+%
+%
+%\end{frame}
+
+
+\begin{frame}{Funcionamiento: \textit{Tracking}}
+
+\begin{itemize}
+
+\item Vector de estado:
+
+\end{itemize}
+
+\centering
+$ \hat{x} = 
+\begin{pmatrix}
+   \hat{x_{v}} \hspace{0.3cm} y_{1} \hdots y_{n} 
+\end{pmatrix}^{T}$
+
+\centering
+$ \hat{x_{v}} = 
+\begin{pmatrix}
+   r^{W} \hspace{0.3cm} q^{WR} \hspace{0.3cm} v^{W} \hspace{0.3cm} \omega^{R}
+\end{pmatrix}^{T}$
+
+
+\begin{itemize}
+
+\item Predicción: Modelo de movimiento y posición anterior.
+
+
+
+\end{itemize}
+
+$ f_{v} = 
+\begin{pmatrix}
+   r^{W}_{nueva} \\
+   q^{WR}_{nueva} \\
+   v^{W}_{nueva} \\
+   \omega^{R}_{nueva}
+\end{pmatrix}
+=
+\begin{pmatrix}
+   r^{W} + ( v^{W}+V^{W}) \Delta t \\
+   q^{WR} \times q((\omega^{R} + \Omega^{R}) \Delta t) \\
+   v^{W} +V^{W} \\
+   \omega^{R} + \Omega^{R}
+\end{pmatrix}
+$
+
+
+
+
+\begin{itemize}
+
+
+\item Actualización: Modelo de observación
+
+
+\end{itemize}
+
+\centering
+$  z_{i}=h_{t}(\hat{x_{t}},y_{i})    \hspace{1.5cm} \Sigma_{IN}=H\hat{P}_{t}+R$
+
+\end{frame}
+
+%
+%\begin{frame}{Funcionamiento}
+%
+%
+%\begin{figure}[htbp]
+%\centering
+%\begin{tabular}{ccc}
+%
+%\subfloat{\includegraphics[width=55mm]{monoslam/monoCarcateristica2.png}}&
+%\subfloat{\includegraphics[width=55mm]{monoslam/monoCarcateristica.png}}&
+%
+%
+%
+%\end{tabular}
+%\end{figure}
+%
+%
+%\end{frame}
+
+
+\begin{frame}{Funcionamiento: \textit{Mapping}}
+
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{ccc}
+
+\subfloat{\includegraphics[width=22mm]{monoslam/particula1.png}}
+\subfloat{\includegraphics[width=22mm]{monoslam/particula2.png}}
+\subfloat{\includegraphics[width=22mm]{monoslam/particula5.png}}
+\subfloat{\includegraphics[width=22mm]{monoslam/particula3.png}}
+\subfloat{\includegraphics[width=22mm]{monoslam/particula4.png}}
+
+
+
+\end{tabular}
+\end{figure}
+
+
+\end{frame}
+
+
+\begin{frame}{Conclusiones}
+
+\begin{itemize}
+
+\item Consigue localización precisa en tiempo real.
+\end{itemize}
+\begin{itemize}
+
+\item Requisito tiempo real falla para más de 100 puntos.
+
+\end{itemize}
+
+\begin{itemize}
+
+\item No permite relocalización.
+
+\end{itemize}
+
+\begin{itemize}
+
+\item Entornos pequeños.
+
+\end{itemize}
+\begin{itemize}
+
+\item Representación poco densa.
+
+\end{itemize}
+
+
+\begin{figure}[!h]
+\centering
+
+\includegraphics[width=55mm]{monoslam/accion.png}
+
+%\caption{} \label{lk1tiem}
+\end{figure}
+
+
+
+
+
+
+\end{frame}
+
+\subsection{PTAM}
+
+\begin{frame}{PTAM}
+
+\begin{itemize}
+
+\item PTAM: \textit{Parallel tracking and mapping}.
+\end{itemize}
+\begin{itemize}
+\item Separación en dos hilos del \textit{tracking} y \textit{mapping}.
+\end{itemize}
+\begin{itemize}
+\item \textit{Keyframe} con \textit{Bundle adjustment}.
+\end{itemize}
+\begin{itemize}
+\item Basado en características.
+\end{itemize}
+\begin{itemize}
+\item Ideado para realidad aumentada.
+\end{itemize}
+\begin{itemize}
+\item Su arquitectura se convirtió en estándar.
+
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}{Funcionamiento: \textit{tracking}}
+
+\begin{itemize}
+
+\item Modelo de movimiento: Modelo velocidad decayente.
+
+\end{itemize}
+
+\begin{itemize}
+
+\item Enfoque piramidal.
+
+\end{itemize}
+
+\begin{itemize}
+
+\item Minimización del error de retroproyección con 50 puntos.
+
+\end{itemize}
+
+
+\begin{itemize}
+
+\item Refinamiento iteración con 1000 puntos.
+
+\end{itemize}
+
+
+\begin{itemize}
+
+\item Permite relocalización: nota sobre la calidad del \textit{tracking}.
+
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}{Funcionamiento: \textit{mapping}}
+
+
+\begin{itemize}
+
+\item No tiene necesidad de funcionar en tiempo real.
+\end{itemize}
+
+\begin{itemize}
+
+\item Guardan \textit{keyframe} en memoria.
+
+\end{itemize}
+
+\begin{itemize}
+
+\item Triangulación entre \textit{Keyframes}.
+
+\end{itemize}
+
+
+\begin{itemize}
+
+\item Optimización de puntos y pose con \textit{Bundle adjustment}.
+
+\end{itemize}
+
+
+
+\begin{figure}[!h]
+\centering
+
+\includegraphics[width=55mm]{intro/bundleAdjustment.png}
+
+%\caption{} \label{lk1tiem}
+\end{figure}
+
+
+\end{frame}
+
+
+\begin{frame}{Conclusiones}
+
+
+\begin{itemize}
+
+\item Localización más precisa y representación más densa que MonoSlam.
+
+
+
+\end{itemize}
+
+
+
+\begin{itemize}
+
+\item Cumple el requisito de tiempo real en el \textit{tracking} para gran cantidad de puntos.
+
+
+
+\end{itemize}
+
+
+
+\begin{itemize}
+
+\item No es robusto a grandes escenas.
+
+
+
+\end{itemize}
+\begin{itemize}
+
+\item Permite la relocalización.
+
+\end{itemize}
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{ccc}
+
+\subfloat{\includegraphics[width=40mm]{intro/ptamVsMonoslam.png}}
+
+\hspace{0.5cm}
+
+\subfloat{\includegraphics[width=40mm]{intro/realidad.png}}
+
+
+
+\end{tabular}
+\end{figure}
+
+
+
+
+\end{frame}
+
+
+\subsection{Métodos directos}
+
+\begin{frame}{Métodos directos}
+
+\begin{figure}[!h]
+\centering
+
+\includegraphics[width=85mm]{intro/esquema.png}
+
+%\caption{} \label{lk1tiem}
+\end{figure}
+
+
+\end{frame}
+
+\begin{frame}{Métodos directos}
+
+$$ I_{1}(x) = I_{2}(\pi(g_{\xi}(z*x))) $$
+
+\begin{figure}[!h]
+\centering
+
+\includegraphics[width=85mm]{intro/brightnes.png}
+
+%\caption{} \label{lk1tiem}
+\end{figure}
+
+
+\end{frame}
+
+
+\begin{frame}{Métodos directos: Ejemplos}
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{ccc}
+
+\subfloat[Textura de alta frecuencia.]{\includegraphics[width=55mm]{svo/textuta1.png}}
+\hspace{0.5cm}
+\subfloat[Textura de alta frecuencia.]{\includegraphics[width=55mm]{svo/textuta3.png}}
+
+
+
+\end{tabular}
+\end{figure}
+
+
+
+\end{frame}
+
+
+\subsection{SVO}
+
+\begin{frame}{SVO}
+
+\begin{itemize}
+
+\item Siglas de \textit{Semi-direct visual odometry}.
+
+
+
+\end{itemize}
+\begin{itemize}
+
+\item Odometría visual, la reconstrucción poco densa.
+
+
+
+\end{itemize}
+\begin{itemize}
+
+\item Basado en métodos híbridos.
+
+
+
+\end{itemize}
+
+\begin{itemize}
+
+\item Separación \textit{tracking} y \textit{mapping}. Uso de \textit{Keyframe} con \textit{Bundle adjustment}.
+
+
+
+\end{itemize}
+
+
+\begin{itemize}
+
+\item Marco de trabajo probabílistico para estimar la profundidad.
+
+
+
+\end{itemize}
+\begin{itemize}
+
+\item Para sistemas embebidos.
+
+
+
+\end{itemize}
+
+
+\end{frame}
+
+
+\begin{frame}{Funcionamiento}
+
+\begin{figure}[!h]
+\centering
+
+\includegraphics[width=65mm]{svo/diagramaSVO.png}
+
+%\caption{} \label{lk1tiem}
+\end{figure}
+
+
+\end{frame}
+\begin{frame}{Conclusiones}
+
+
+
+\begin{itemize}
+\item Algoritmo muy rápido. 300 fps en sobremesa. 55 fps sistema embebido.
+
+\end{itemize}
+
+\begin{itemize}
+\item Reconstrucción poco densa, pero más precisa.
+\end{itemize}
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{ccc}
+
+\subfloat{\includegraphics[width=40mm]{svo/svoVsPtam.png}}
+\subfloat{\includegraphics[width=40mm]{svo/ptamVsSvo.png}}
+
+
+
+\end{tabular}
+\end{figure}
+
+
+
+\end{frame}
+
+
+
+
+\subsection{LSD-SLAM}
+
+\begin{frame}{LSD-SLAM}
+
+\begin{itemize}
+
+\item LSD-SLAM, siglas de \textit{Large scale direct slam}
+
+\end{itemize}
+
+\begin{itemize}
+
+\item Semi denso, solo reconstruye píxeles con gradiente.
+
+\end{itemize}
+\begin{itemize}
+
+\item Estimación probabílistica de la profundidad.
+
+\end{itemize}
+\begin{itemize}
+
+\item Robustez largas trayectorias, realiza \textit{loop closure}.
+
+\end{itemize}
+
+\begin{itemize}
+
+\item Parametriza la escala.
+
+\end{itemize}
+
+
+\begin{itemize}
+
+\item En CPU, anterior DTAM en GPU.
+
+\end{itemize}
+
+
+
+\end{frame}
+
+\begin{frame}{\textit{Tracking}}
+
+\begin{figure}[!h]
+\centering
+
+\includegraphics[width=60mm]{lsdSlam/tracking.png}
+
+%\caption{} \label{lk1tiem}
+\end{figure}
+
+
+
+\end{frame}
+\begin{frame}{\textit{Mapping}}
+
+\begin{figure}[!h]
+\centering
+
+\includegraphics[width=60mm]{lsdSlam/mapping.png}
+
+%\caption{} \label{lk1tiem}
+\end{figure}
+
+
+
+\end{frame}
+\begin{frame}{{\textit{Loop closure}}}
+
+\begin{figure}[!h]
+\centering
+
+\includegraphics[width=55mm]{lsdSlam/loop.png}
+
+%\caption{} \label{lk1tiem}
+\end{figure}
+
+
+
+\end{frame}
+\begin{frame}{Conclusiones}
+
+\begin{itemize}
+
+\item Reconstrucción semidensa.
+
+
+\end{itemize}
+\begin{itemize}
+
+\item Largas trayectorias.
+
+
+\end{itemize}
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{ccc}
+
+\subfloat{\includegraphics[width=55mm]{lsdSlam/1.png}}
+
+\hspace{0.5cm}
+
+\subfloat{\includegraphics[width=55mm]{lsdSlam/3.png}}
+
+
+
+\end{tabular}
+\end{figure}
+
+
+
+\end{frame}
+\subsection{ORB-SLAM}
+
+\begin{frame}{ORB-SLAM}
+
+\begin{itemize}
+
+\item Basado en características.
+
+\end{itemize}
+
+\begin{itemize}
+
+\item Separación \textit{tracking}, \textit{mapping} y \textit{loop closure}.
+
+\end{itemize}
+
+\begin{itemize}
+
+\item \textit{Keyframe} con \textit{Bundle adjustemnt.}
+
+\end{itemize}
+
+\begin{itemize}
+
+\item Reconocimiento de escena para realizar \textit{Loop closure}.
+
+\end{itemize}
+
+\begin{itemize}
+
+\item Relocalización.
+
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}{Funcionamiento}
+\begin{figure}[!h]
+\centering
+
+\includegraphics[width=75mm]{lsdSlam/ss.png}
+
+%\caption{} \label{lk1tiem}
+\end{figure}
+
+
+
+\end{frame}
+
+\begin{frame}{Conclusiones}
+
+\begin{itemize}
+
+\item Hasta la fecha es el más preciso. Supera a PTAM, LSD-SLAM y RGBD-SLAM.
+
+\end{itemize}
+
+\begin{itemize}
+
+\item Tiempo real.
+
+\end{itemize}
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{ccc}
+
+\subfloat{\includegraphics[width=55mm]{svo/map1.png}}
+
+\hspace{0.5cm}
+
+\subfloat{\includegraphics[width=55mm]{svo/map3.png}}
+
+
+
+\end{tabular}
+\end{figure}
+
+
+
+\end{frame}
+
+
+
+\section{Conclusiones}
+
+\begin{frame}{Conclusiones}
+
+\begin{itemize}
+
+\item MonoSlam, primer algoritmo monocular slam en tiempo real.
+
+
+
+\end{itemize}
+
+\begin{itemize}
+\item PTAM, separación \textit{tracking} y \textit{mapping}, PTAM supera a MonoSlam
+
+
+
+\end{itemize}
+\begin{itemize}
+\item Métodos directos: SVO,LSD-SLAM
+
+
+
+\end{itemize}
+\begin{itemize}
+\item Basados en características: ORB-SLAM
+
+
+
+
+\end{itemize}
+
+
+\end{frame}
+
+
+%\begin{frame}{Trabajo futuro}
+%
+%Introducción de cámaras de RGBD bajo coste.
+%
+%
+%\hspace{2cm}
+%
+%\begin{itemize}
+%
+%
+%\item Integrar información semántica.
+%
+%
+%
+%\end{itemize}
+%\begin{itemize}
+%\item Robustez escena dinámicas.
+%
+%\end{itemize}
+%\begin{itemize}
+%\item Escalabilidad.
+%
+%\end{itemize}
+%\begin{itemize}
+%\item Reconstrucción más densas.
+%
+%\end{itemize}
+%\begin{itemize}
+%\item Bajo consumo.
+%
+%
+%\end{itemize}
+%
+%
+%
+%\end{frame}
+
+\begin{frame}
+\hspace{2cm}   \huge Gracias por su atención
+\begin{figure}[!h]
+\centering
+
+\includegraphics[width=80mm]{mark2.jpg}
+
+%\caption{} \label{lk1tiem}
+\end{figure}
+
+
+\end{frame}
+
+\end{document}
+
+
+
